@@ -26,13 +26,5 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void NextStage(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-    }
-
-    public void Retry()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
+    
 }
