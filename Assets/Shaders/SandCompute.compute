@@ -2,6 +2,7 @@
 #pragma kernel CSMain
 
 RWTexture2D<float4> SandTexture;
+RWTexture2D<float4> ColliderTexture;
 RWStructuredBuffer<float> SandGrid;
 
 int width, height;
@@ -13,7 +14,7 @@ bool IsGridPixelEmpty(int2 pxPos)
     bool isPxOutsideSurfaceArea = pxId >= width * height || pxId < 0;
     if(isPxOutsideSurfaceArea) return false;
 
-    bool isPxEmpty = SandGrid[pxId] == 0;
+    bool isPxEmpty = SandGrid[pxId] == 0 && ColliderTexture[pxPos].w == 0;
     return isPxEmpty;
 }
 bool IsGridPixelCloseEmpty(int2 offset, int2 oldPos) 
@@ -87,6 +88,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int2 xy = (int2)id.xy;
 
     if(x >= width || y >= height) return;
+
+    if(ColliderTexture[xy].w != 0) 
+    {
+        SandGrid[y * width + x] = 2;
+    }
+    if(SandGrid[y* width + x] == 2) SandTexture[xy] = float4(1,0,0,1);
 
     int id_gridPxThis = y * width + x;
     int id_gridPxLeft = y * width + x + 1;

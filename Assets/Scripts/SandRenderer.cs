@@ -2,52 +2,58 @@ using UnityEngine;
 
 public class SandRenderer : MonoBehaviour
 {
+    [Header("Sand Shader References")]
     public ComputeShader computeShader;
-    ComputeShader computeShaderInstance;
-
-    public ComputeBuffer sandTextureBuffer;
-    public ComputeBuffer nextTextureBuffer;
     public Renderer targetRenderer;
-    RenderTexture sandRenderTexture;
+    ComputeBuffer sandTextureBuffer;
+    ComputeBuffer nextTextureBuffer;
+    ComputeShader computeShaderInstance;
+    public RenderTexture sandRenderTexture;
 
-    int kernelID;
-
-    [Header("Settings")]
+    [Header("Sand Settings")]
     public int width;
     public int height;
     public float[] sandArray;
     ComputeBuffer sandGridBuffer;
+    public float timeWait = 1f;
+    public float timeDelta = 1f;
+
+    [Header("Collider References")]
+    public Camera colliderCamera;
+    public RenderTexture colliderRenderTex;
+
+    [Header("Collider Settings")]
+    public LayerMask colliderLayer;
+    public Vector2 colliderTexDebugSize;
+
+    int kernelID;
 
 
+
+    #region Unity lifecycle
 
     void Start()
     {
-        sandRenderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
-        sandRenderTexture.enableRandomWrite = true;
-        sandRenderTexture.filterMode = FilterMode.Point;
-        sandRenderTexture.Create();
+        InitializeSandRenderTexture();
+        InitializeColliderRenderTexture();
+
+        InitializeColliderCamera();
 
         InitializeComputeShader();
 
         targetRenderer.material.mainTexture = sandRenderTexture;
     }
 
-    public float timeWait = 1f;
-    public float timeDelta = 1f;
     void Update()
     {
-        computeShaderInstance.SetTexture(kernelID, "SandTexture", sandRenderTexture);
-
-        timeDelta += Time.deltaTime;
-        if (timeDelta < timeWait) return;
-        //computeShaderInstance.Dispatch(kernelID, width / 2, height / 2, 1);
-        computeShaderInstance.Dispatch(kernelID, width, height, 1);
-        timeDelta = 0;
+        UpdateColliderTexture();
+        UpdateSandShader();
     }
 
     void OnDestroy()
     {
         if (sandRenderTexture != null) sandRenderTexture.Release();
+        if (colliderRenderTex != null) colliderRenderTex.Release();
 
         if (Application.isPlaying)
         {
@@ -63,7 +69,19 @@ public class SandRenderer : MonoBehaviour
         sandGridBuffer?.Release();
     }
 
+    #endregion
 
+
+
+    #region Initialize methods
+
+    void InitializeSandRenderTexture()
+    {
+        sandRenderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
+        sandRenderTexture.enableRandomWrite = true;
+        sandRenderTexture.filterMode = FilterMode.Point;
+        sandRenderTexture.Create();
+    }
 
     void InitializeComputeShader()
     {
@@ -81,10 +99,61 @@ public class SandRenderer : MonoBehaviour
         computeShaderInstance.SetInt("height", height);
     }
 
+    void InitializeColliderRenderTexture()
+    {
+        colliderRenderTex = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
+        colliderRenderTex.enableRandomWrite = true;
+        colliderRenderTex.filterMode = FilterMode.Point;
+        //colliderRenderTex.wrapMode = TextureWrapMode.Clamp;
+        colliderRenderTex.Create();
+    }
+    void InitializeColliderCamera()
+    {
+        colliderCamera.orthographicSize = transform.localScale.x / 2;
+        colliderCamera.targetTexture = colliderRenderTex;
+    }
+
+    #endregion
+
+
+
+    #region Update methods
+
+    void UpdateSandShader()
+    {
+        computeShaderInstance.SetTexture(kernelID, "SandTexture", sandRenderTexture);
+        computeShaderInstance.SetTexture(kernelID, "ColliderTexture", colliderRenderTex);
+
+        timeDelta += Time.deltaTime;
+        if (timeDelta < timeWait) return;
+        //computeShaderInstance.Dispatch(kernelID, width / 2, height / 2, 1);
+        computeShaderInstance.Dispatch(kernelID, width, height, 1);
+        timeDelta = 0;
+    }
+
+    void UpdateColliderTexture()
+    {
+        Graphics.SetRenderTarget(colliderRenderTex);
+        GL.Clear(false, true, Color.black);
+
+        colliderCamera.Render();
+    }
+
+    #endregion
+
+
+
     [Button]
     void ReadSandBuffer()
     {
         if (!Application.isPlaying) return;
         sandGridBuffer.GetData(sandArray);
+    }
+
+
+
+    void OnGUI()
+    {
+        if (colliderRenderTex != null) GUI.DrawTexture(new Rect(10, 10, width * colliderTexDebugSize.x, height * colliderTexDebugSize.y), colliderRenderTex);
     }
 }
