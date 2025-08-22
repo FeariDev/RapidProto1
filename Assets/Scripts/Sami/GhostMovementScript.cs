@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GhostMovementScript : MonoBehaviour
@@ -71,29 +70,29 @@ public class GhostMovementScript : MonoBehaviour
     {
         if (moveToPosition.x > transform.position.x & Vector3.Distance(gameObject.transform.position,moveToPosition) > keepPositionDistance)
         {
-            curSpeed.x = MathLibary.Approach(curSpeed.x, maxSpeed, acceleration);
+            curSpeed.x = UltityClass.Approach(curSpeed.x, maxSpeed, acceleration);
         }
         else if (moveToPosition.x < transform.position.x & Vector3.Distance(gameObject.transform.position, moveToPosition) > keepPositionDistance)
         {
-            curSpeed.x = MathLibary.Approach(curSpeed.x, -maxSpeed, acceleration);
+            curSpeed.x = UltityClass.Approach(curSpeed.x, -maxSpeed, acceleration);
         }
         else
         {
-            curSpeed.x = MathLibary.Approach(curSpeed.x,0, deceleration);
+            curSpeed.x = UltityClass.Approach(curSpeed.x,0, deceleration);
         }
         if (!disableYAxisMovement)
         {
             if (moveToPosition.y > transform.position.y & Vector3.Distance(gameObject.transform.position, moveToPosition) > keepPositionDistance)
             {
-                curSpeed.y = MathLibary.Approach(curSpeed.y, maxSpeed, acceleration);
+                curSpeed.y = UltityClass.Approach(curSpeed.y, maxSpeed, acceleration);
             }
             else if (moveToPosition.y < transform.position.y & Vector3.Distance(gameObject.transform.position, moveToPosition) > keepPositionDistance)
             {
-                curSpeed.y = MathLibary.Approach(curSpeed.y, -maxSpeed, acceleration);
+                curSpeed.y = UltityClass.Approach(curSpeed.y, -maxSpeed, acceleration);
             }
             else
             {
-                curSpeed.y = MathLibary.Approach(curSpeed.y, 0, deceleration);
+                curSpeed.y = UltityClass.Approach(curSpeed.y, 0, deceleration);
             }
         }
 

@@ -119,6 +119,59 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &171782266
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 171782268}
+  - component: {fileID: 171782267}
+  m_Layer: 0
+  m_Name: Spawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &171782267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171782266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c81fd3d07ad8f7e4a974e5d766bf3b32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnObjects:
+  - {fileID: 765360563}
+  offset: {x: -5, y: 0, z: 0}
+  rotation: {x: 0, y: 0, z: 0, w: 0}
+  interval: 1
+  isEnabled: 0
+  onObjectsSpawn:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &171782268
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171782266}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.19, y: 0.66097, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &233792616
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,7 +317,6 @@ GameObject:
   - component: {fileID: 765360566}
   - component: {fileID: 765360565}
   - component: {fileID: 765360568}
-  - component: {fileID: 765360567}
   - component: {fileID: 765360569}
   m_Layer: 0
   m_Name: Square (1)
@@ -343,33 +395,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &765360567
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 765360563}
-  m_BodyType: 2
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 1.03
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!61 &765360568
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -433,9 +458,9 @@ MonoBehaviour:
   randomizeInterval: 4
   moveToPosition: {x: 4.95, y: 3.03, z: 0}
   keepPositionDistance: 2
-  disableYAxisMovement: 0
+  disableYAxisMovement: 1
   maxSpeed: 0.1
-  acceleration: 0.005
+  acceleration: 0
   deceleration: 0.01
   destoryOnCollisionTag: []
 --- !u!1 &1953409993
@@ -582,3 +607,4 @@ SceneRoots:
   - {fileID: 1953409996}
   - {fileID: 233792619}
   - {fileID: 765360566}
+  - {fileID: 171782268}
