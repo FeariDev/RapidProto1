@@ -5,8 +5,8 @@ using static UnityEngine.GraphicsBuffer;
 public class Ghost : MonoBehaviour
 {
     [SerializeField] private List<GameObject> interactableObjects;
-    [SerializeField] private float spawnStartTime;
-    [SerializeField] private float spawnInterval;
+    [SerializeField] private float spawnStartTime = 5;
+    [SerializeField] private float spawnInterval = 10;
     [SerializeField] private float speed = 2;
     [SerializeField] private GameObject target;
     [SerializeField] private bool alive;
