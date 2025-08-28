@@ -15,6 +15,7 @@ public class SandRenderer : MonoBehaviour
     public int height;
     public float[] sandArray;
     ComputeBuffer sandGridBuffer;
+    public Vector2 sandSpawnPos;
     public float timeWait = 1f;
     public float timeDelta = 1f;
 
@@ -97,6 +98,9 @@ public class SandRenderer : MonoBehaviour
 
         computeShaderInstance.SetInt("width", width);
         computeShaderInstance.SetInt("height", height);
+
+        computeShaderInstance.SetInt("sandSpawnX", (int)sandSpawnPos.x);
+        computeShaderInstance.SetInt("sandSpawnY", (int)sandSpawnPos.y);
     }
 
     void InitializeColliderRenderTexture()

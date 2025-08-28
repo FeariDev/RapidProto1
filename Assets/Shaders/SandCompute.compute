@@ -6,6 +6,7 @@ RWTexture2D<float4> ColliderTexture;
 RWStructuredBuffer<float> SandGrid;
 
 int width, height;
+int sandSpawnX, sandSpawnY;
 
 bool IsGridPixelEmpty(int2 pxPos) 
 {
@@ -104,6 +105,8 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int id_gridPxRight = y * width + x - 1;
     int id_gridPxTop = (y + 1) * width + x;
     int id_gridPxBot = (y - 1) * width + x;
+
+    if(id_gridPxThis == sandSpawnY * width + sandSpawnX) SandGrid[id_gridPxThis] = 1;
 
     //int2 id_texPxThis = int2(x, y);
     //int2 id_texPxLeft = int2(x - 1, y);
