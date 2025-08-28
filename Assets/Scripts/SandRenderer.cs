@@ -16,8 +16,17 @@ public class SandRenderer : MonoBehaviour
     public float[] sandArray;
     ComputeBuffer sandGridBuffer;
     public Vector2 sandSpawnPos;
+    public int[] sandSpawnAmount;
+    public int[] sandRemaining;
+    public int[] sandCollected;
+    ComputeBuffer sandRemainingBuffer;
+    ComputeBuffer sandCollectedBuffer;
     public float timeWait = 1f;
     public float timeDelta = 1f;
+
+    [Header("Hole Settings")]
+    public Vector4 holeX;
+    public Vector4 holeY;
 
     [Header("Collider References")]
     public Camera colliderCamera;
@@ -68,6 +77,8 @@ public class SandRenderer : MonoBehaviour
         sandTextureBuffer?.Release();
         nextTextureBuffer?.Release();
         sandGridBuffer?.Release();
+        sandRemainingBuffer?.Release();
+        sandCollectedBuffer?.Release();
     }
 
     #endregion
@@ -91,16 +102,26 @@ public class SandRenderer : MonoBehaviour
         kernelID = computeShaderInstance.FindKernel("CSMain");
 
         sandGridBuffer = new ComputeBuffer(width * height, sizeof(float));
+        sandRemainingBuffer = new ComputeBuffer(1, sizeof(int));
+        sandCollectedBuffer = new ComputeBuffer(1, sizeof(int));
 
         computeShaderInstance.SetBuffer(kernelID, "SandGrid", sandGridBuffer);
+        computeShaderInstance.SetBuffer(kernelID, "SandRemaining", sandRemainingBuffer);
+        computeShaderInstance.SetBuffer(kernelID, "SandCollected", sandCollectedBuffer);
 
+        sandRemaining = sandSpawnAmount;
         sandGridBuffer.SetData(sandArray);
+        sandRemainingBuffer.SetData(sandSpawnAmount);
+        sandCollectedBuffer.SetData(new int[1]);
 
         computeShaderInstance.SetInt("width", width);
         computeShaderInstance.SetInt("height", height);
 
         computeShaderInstance.SetInt("sandSpawnX", (int)sandSpawnPos.x);
         computeShaderInstance.SetInt("sandSpawnY", (int)sandSpawnPos.y);
+
+        computeShaderInstance.SetVector("holeX", holeX);
+        computeShaderInstance.SetVector("holeY", holeY);
     }
 
     void InitializeColliderRenderTexture()
@@ -132,6 +153,10 @@ public class SandRenderer : MonoBehaviour
         if (timeDelta < timeWait) return;
         //computeShaderInstance.Dispatch(kernelID, width / 2, height / 2, 1);
         computeShaderInstance.Dispatch(kernelID, width, height, 1);
+
+        sandRemainingBuffer.GetData(sandRemaining);
+        sandCollectedBuffer.GetData(sandCollected);
+
         timeDelta = 0;
     }
 

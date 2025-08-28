@@ -4639,8 +4639,13 @@ MonoBehaviour:
   - 0
   - 0
   sandSpawnPos: {x: 50, y: 50}
+  sandSpawnAmount: e8030000
+  sandRemaining: 00000000
+  sandCollected: 00000000
   timeWait: 0.02
   timeDelta: 1
+  holeX: {x: 30, y: 40, z: 30, w: 40}
+  holeY: {x: 0, y: 0, z: 1, w: 1}
   colliderCamera: {fileID: 2059945343}
   colliderRenderTex: {fileID: 0}
   colliderLayer:

@@ -5,8 +5,13 @@ RWTexture2D<float4> SandTexture;
 RWTexture2D<float4> ColliderTexture;
 RWStructuredBuffer<float> SandGrid;
 
+RWStructuredBuffer<int> SandRemaining;
+RWStructuredBuffer<int> SandCollected;
+
 int width, height;
 int sandSpawnX, sandSpawnY;
+
+float4 holeX, holeY;
 
 bool IsGridPixelEmpty(int2 pxPos) 
 {
@@ -35,6 +40,13 @@ bool IsGridPixelCloseEmpty(int2 offset, int2 oldPos)
     return IsGridPixelEmpty(newPos);
 }
 
+int GetGridPixelType(int2 pxPos) 
+{
+    int pxId = pxPos.y * width + pxPos.x;
+
+    return SandGrid[pxId];
+}
+
 void TrySetGridPixel(int2 pixelPos, int pixelType) 
 {
     int pixelId = pixelPos.y * width + pixelPos.x;
@@ -54,6 +66,11 @@ bool TrySetGridPixelClose(int2 offset, int2 oldPos, int pixelType)
     if(isPixelFree) 
     {
         SandGrid[newPosId] = pixelType;
+        return true;
+    }
+    else if(!isPixelFree && GetGridPixelType(newPos) == 3)
+    {
+        SandCollected[0] += 1;
         return true;
     }
 
@@ -85,6 +102,31 @@ void SimulateSandPixel(int2 pxPos)
     }
 }
 
+bool IsPixelInHole(int2 pxPos) 
+{
+    int botLeftX = holeX.x;
+    int botRighX = holeX.y;
+    int topLeftX = holeX.z;
+    int topRighX = holeX.w;
+
+    int botLeftY = holeY.x;
+    int botRighY = holeY.y;
+    int topLeftY = holeY.z;
+    int topRighY = holeY.w;
+
+    if(pxPos.x < botLeftX) return false;
+    if(pxPos.x > botRighX) return false;
+    if(pxPos.x < topLeftX) return false;
+    if(pxPos.x > topRighX) return false;
+
+    if(pxPos.y < botLeftY) return false;
+    if(pxPos.y < botRighY) return false;
+    if(pxPos.y > topLeftY) return false;
+    if(pxPos.y > topRighY) return false;
+
+    return true;
+}
+
 [numthreads(32,32,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -106,13 +148,18 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int id_gridPxTop = (y + 1) * width + x;
     int id_gridPxBot = (y - 1) * width + x;
 
-    if(id_gridPxThis == sandSpawnY * width + sandSpawnX) SandGrid[id_gridPxThis] = 1;
+    //Spawn sand
+    if(id_gridPxThis == sandSpawnY * width + sandSpawnX && IsGridPixelEmpty(xy) && SandRemaining[0] > 0) 
+    {
+        SandGrid[id_gridPxThis] = 1;
+        SandRemaining[0] -= 1;
+    }
 
-    //int2 id_texPxThis = int2(x, y);
-    //int2 id_texPxLeft = int2(x - 1, y);
-    //int2 id_texPxRight = int2(x + 1, y);
-    //int2 id_texPxTop = int2(x, y + 1);
-    //int2 id_texPxBot = int2(x, y - 1);
+    //HOLE
+    if(IsPixelInHole(xy)) 
+    {
+        SandGrid[id_gridPxThis] = 3;
+    }
 
     int pixelGrid = SandGrid[id_gridPxThis];
     int2 pixelTexPos = xy;
@@ -137,6 +184,10 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         SimulateSandPixel(xy);
 
         SandTexture[xy] = sandColor;
+    }
+    else if(pixelGrid == 3) 
+    {
+        SandTexture[xy] = float4(0,0,0,1);
     }
     else 
     {
