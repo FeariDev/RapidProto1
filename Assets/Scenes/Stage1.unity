@@ -1639,6 +1639,9 @@ MonoBehaviour:
   timer: 30
   ghosts:
   - {fileID: 829838701}
+  whatToTurnOff:
+  - {fileID: 829838701}
+  - {fileID: 340669920}
   bars: {fileID: 27297768}
 --- !u!4 &664871284
 Transform:

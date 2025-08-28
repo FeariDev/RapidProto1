@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private int timer;
     [SerializeField] private List<GameObject> ghosts;
+    [SerializeField] private List<GameObject> whatToTurnOff;
     [SerializeField] private Bars bars;
 
     private void Awake()
@@ -73,6 +74,10 @@ public class GameManager : MonoBehaviour
         menu.SetActive(true);
         retry.SetActive(true);
         mainMenu.SetActive(true);
+        foreach (GameObject item in whatToTurnOff)
+        {
+            item.SetActive(false);
+        }
         if (eventNumber == 0)
         {
             //win

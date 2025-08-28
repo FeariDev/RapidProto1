@@ -1960,6 +1960,10 @@ MonoBehaviour:
   ghosts:
   - {fileID: 153395200}
   - {fileID: 2036177477}
+  whatToTurnOff:
+  - {fileID: 153395200}
+  - {fileID: 2036177477}
+  - {fileID: 340669920}
   bars: {fileID: 27297768}
 --- !u!4 &664871284
 Transform:
