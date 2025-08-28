@@ -8,12 +8,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject menu;
     [SerializeField] private GameObject retry;
     [SerializeField] private GameObject next;
+    [SerializeField] private GameObject mainMenu;
     [SerializeField] private TextMeshProUGUI menuText;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private int timer;
     [SerializeField] private List<GameObject> ghosts;
     [SerializeField] private Bars bars;
-    private int barTimer;
 
     private void Awake()
     {
@@ -72,6 +72,7 @@ public class GameManager : MonoBehaviour
     {
         menu.SetActive(true);
         retry.SetActive(true);
+        mainMenu.SetActive(true);
         if (eventNumber == 0)
         {
             //win
@@ -82,6 +83,7 @@ public class GameManager : MonoBehaviour
         {
             //loss
             menuText.text = "Stage Failed";
+            next.SetActive(false);
         }
     }
 }
