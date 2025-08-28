@@ -1,0 +1,142 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+RWTexture2D<float4> SandTexture;
+RWTexture2D<float4> ColliderTexture;
+RWStructuredBuffer<float> SandGrid;
+
+int width, height;
+
+bool IsGridPixelEmpty(int2 pxPos) 
+{
+    int pxId = pxPos.y * width + pxPos.x;
+
+    bool isPxOutsideSurfaceArea = pxId >= width * height || pxId < 0;
+    if(isPxOutsideSurfaceArea) return false;
+
+    bool isPxEmpty = SandGrid[pxId] == 0 && ColliderTexture[pxPos].w == 0;
+    return isPxEmpty;
+}
+bool IsGridPixelCloseEmpty(int2 offset, int2 oldPos) 
+{
+    int2 newPos = int2(offset.x + oldPos.x, offset.y + oldPos.y);
+
+    int newPosId = newPos.y * width + newPos.x;
+    int oldPosId = oldPos.y * width + oldPos.x;
+
+    if(newPosId >= width * height || newPosId < 0) return false;
+
+    bool isCloseColumn = offset.x >= -1 && offset.x <= 1 && newPos.x < width && newPos.x >= 0;
+    bool isCloseRow = offset.y >= -1 && offset.y <= 1 && newPos.y < height && newPos.y >= 0;
+
+    if(!isCloseColumn || !isCloseRow) return false;
+
+    return IsGridPixelEmpty(newPos);
+}
+
+void TrySetGridPixel(int2 pixelPos, int pixelType) 
+{
+    int pixelId = pixelPos.y * width + pixelPos.x;
+
+    if(pixelId >= width * height || pixelId < 0) return;
+
+    SandGrid[pixelId] = pixelType;
+}
+bool TrySetGridPixelClose(int2 offset, int2 oldPos, int pixelType) 
+{
+    int2 newPos = int2(offset.x + oldPos.x, offset.y + oldPos.y);
+
+    int newPosId = (newPos.y) * width + (newPos.x);
+    int oldPosId = oldPos.y * width + oldPos.x;
+
+    bool isPixelFree = IsGridPixelCloseEmpty(offset, oldPos);
+    if(isPixelFree) 
+    {
+        SandGrid[newPosId] = pixelType;
+        return true;
+    }
+
+    return false;
+}
+
+void SimulateSandPixel(int2 pxPos) 
+{
+    int belowId = (pxPos.y - 1) * width + pxPos.x;
+
+    int2 topOffset = int2(0, 1);
+    int2 botOffset = int2(0, -1);
+    int2 leftOffset = int2(-1, 0);
+    int2 rightOffset = int2(1, 0);
+    int2 botLeftOffset = int2(-1, -1);
+    int2 botRightOffset = int2(1, -1);
+
+    if(TrySetGridPixelClose(botOffset, pxPos, 1)) 
+    {
+        TrySetGridPixel(pxPos, 0);
+    }
+    else if(TrySetGridPixelClose(botLeftOffset, pxPos, 1))
+    {
+        TrySetGridPixel(pxPos, 0);
+    }
+    else if(TrySetGridPixelClose(botRightOffset, pxPos, 1)) 
+    {
+        TrySetGridPixel(pxPos, 0);
+    }
+}
+
+[numthreads(32,32,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int x = (int)id.x;
+    int y = (int)id.y;
+    int2 xy = (int2)id.xy;
+
+    if(x >= width || y >= height) return;
+
+    if(ColliderTexture[xy].w != 0) 
+    {
+        SandGrid[y * width + x] = 2;
+    }
+    if(SandGrid[y* width + x] == 2) SandTexture[xy] = float4(1,0,0,1);
+
+    int id_gridPxThis = y * width + x;
+    int id_gridPxLeft = y * width + x + 1;
+    int id_gridPxRight = y * width + x - 1;
+    int id_gridPxTop = (y + 1) * width + x;
+    int id_gridPxBot = (y - 1) * width + x;
+
+    //int2 id_texPxThis = int2(x, y);
+    //int2 id_texPxLeft = int2(x - 1, y);
+    //int2 id_texPxRight = int2(x + 1, y);
+    //int2 id_texPxTop = int2(x, y + 1);
+    //int2 id_texPxBot = int2(x, y - 1);
+
+    int pixelGrid = SandGrid[id_gridPxThis];
+    int2 pixelTexPos = xy;
+
+    float xPercent = (float)x / (float)width;
+    float yPercent = (float)y / (float)height;
+
+    if(pixelGrid == 1) 
+    {
+        //float4 sandColor = float4(xPercent, yPercent, 0, 1);
+        float4 sandColor = float4(1,1,0,1);
+
+        /*
+        TrySetGridPixelClose(int2(1, 0), xy, 1);
+        TrySetGridPixelClose(int2(-1, 0), xy, 1);
+        TrySetGridPixelClose(int2(0, 1), xy, 1);
+        TrySetGridPixelClose(int2(0, -1), xy, 1);
+
+        TrySetGridPixel(int2(x, y), 0);
+        */
+
+        SimulateSandPixel(xy);
+
+        SandTexture[xy] = sandColor;
+    }
+    else 
+    {
+        SandTexture[xy] = float4(0,0,0,0);
+    }
+}
