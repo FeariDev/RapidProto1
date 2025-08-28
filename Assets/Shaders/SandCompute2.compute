@@ -1,0 +1,204 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+RWTexture2D<float4> SandTexture;
+RWTexture2D<float4> ColliderTexture;
+RWStructuredBuffer<int> SandGrid;
+
+RWStructuredBuffer<int> SandSpawnAmount;
+RWStructuredBuffer<int> SandRemaining;
+RWStructuredBuffer<int> SandCollected;
+
+int width, height;
+int sandSpawnX, sandSpawnY;
+
+float4 holeX, holeY;
+
+
+
+//Helper methods
+//--------------------
+
+void SetPixel(int2 pxPos, int pxType) 
+{
+    SandGrid[pxPos.y * width + pxPos.x] = pxType;
+}
+
+int GetPixelType(int2 pxPos) 
+{
+    int pxId = pxPos.y * width + pxPos.x;
+
+    return SandGrid[pxId];
+}
+int GetPixelTypeClose(int2 offset, int2 oldPos) 
+{
+    int2 newPos = int2(offset.x + oldPos.x, offset.y + oldPos.y);
+
+    int newPosId = newPos.y * width + newPos.x;
+    int oldPosId = oldPos.y * width + oldPos.x;
+
+    bool isCloseColumn = offset.x >= -1 && offset.x <= 1 && newPos.x < width && newPos.x >= 0;
+    bool isCloseRow = offset.y >= -1 && offset.y <= 1 && newPos.y < height && newPos.y >= 0;
+
+    if(!isCloseColumn || !isCloseRow) return -1;
+
+    return GetPixelType(newPos);
+}
+
+bool IsPixelInHole(int2 pxPos) 
+{
+    int botLeftX = holeX.x;
+    int botRighX = holeX.y;
+    int topLeftX = holeX.z;
+    int topRighX = holeX.w;
+
+    int botLeftY = holeY.x;
+    int botRighY = holeY.y;
+    int topLeftY = holeY.z;
+    int topRighY = holeY.w;
+
+    if(pxPos.x < botLeftX) return false;
+    if(pxPos.x > botRighX) return false;
+    if(pxPos.x < topLeftX) return false;
+    if(pxPos.x > topRighX) return false;
+
+    if(pxPos.y < botLeftY) return false;
+    if(pxPos.y < botRighY) return false;
+    if(pxPos.y > topLeftY) return false;
+    if(pxPos.y > topRighY) return false;
+
+    return true;
+}
+
+//--------------------
+
+
+
+void UpdateSandTexture(int pxType, int2 xy) 
+{
+    if(pxType == 0) 
+    {
+        SandTexture[xy] = float4(0,0,0,0);
+    }
+    else if(pxType == 1) 
+    {       
+        SandTexture[xy] = float4(1,1,0,1);
+    }
+    else if(pxType == 2) 
+    {
+        SandTexture[xy] = float4(0,0,0,0);
+    }
+    else if(pxType == 3) 
+    {
+        SandTexture[xy] = float4(0,0,0,1);
+    }
+}
+
+
+
+void UpdateCollider(int2 xy) 
+{
+    if(ColliderTexture[xy].w != 0) 
+    {
+        SandGrid[xy.y * width + xy.x] = 2;
+    }
+}
+
+
+
+void SpawnSand(int2 pxPos) 
+{
+    int2 spawnPos = int2(sandSpawnX, sandSpawnY);
+
+    int pxId = pxPos.y * width + pxPos.x;
+    int spId = spawnPos.y * width + spawnPos.x;
+
+    if(pxId != spId) return;
+    if(GetPixelType(pxPos) != 0) return;
+    if(SandSpawnAmount[0] <= 0) return;
+
+    SandGrid[spawnPos.y * width + spawnPos.x] = 1;
+    InterlockedAdd(SandRemaining[0], 1);
+    InterlockedAdd(SandSpawnAmount[0], -1);
+}
+void SpawnHole(int2 pxPos) 
+{
+    if(IsPixelInHole(pxPos)) 
+    {
+        SandGrid[pxPos.y * width + pxPos.x] = 3;
+    }
+}
+
+
+
+bool RunPxPhysics(int2 offset, int2 oldPos) 
+{
+    int2 newPos = int2(offset.x + oldPos.x, offset.y + oldPos.y);
+
+    int newPosId = newPos.y * width + newPos.x;
+    int oldPosId = oldPos.y * width + oldPos.x;
+
+    int newPxType = SandGrid[newPosId];
+    int oldPxType = SandGrid[oldPosId];
+
+    if(GetPixelTypeClose(offset, oldPos) == -1) return false;
+
+    if(newPxType == 0)
+    {
+        SetPixel(newPos, 1);
+        SetPixel(oldPos, 0);
+        return true;
+    }
+    else if(newPxType == 1) 
+    {
+        return false;
+    }
+    else if(newPxType == 2) 
+    {
+        return false;
+    }
+    else if(newPxType == 3) 
+    {
+        InterlockedAdd(SandCollected[0], 1);
+        InterlockedAdd(SandRemaining[0], -1);
+        SetPixel(oldPos, 0);
+        return true;
+    }
+
+    return false;
+}
+
+void SimulatePixel(int2 pxPos, int pxType) 
+{
+    if(pxType != 1) return;
+
+    int pxId = pxPos.y * width + pxPos.x;
+
+    if(RunPxPhysics(int2(0,-1), pxPos)) return;
+    if(RunPxPhysics(int2(-1,-1), pxPos)) return;
+    if(RunPxPhysics(int2(1,-1),pxPos)) return;
+}
+
+
+
+[numthreads(32,32,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int x = (int)id.x;
+    int y = (int)id.y;
+    int2 xy = (int2)id.xy;
+
+    if(x >= width || y >= height) return;
+
+    UpdateCollider(xy);
+
+    SpawnHole(xy);
+    SpawnSand(xy);
+
+    int id_gridPxThis = y * width + x;
+    int pxType = SandGrid[id_gridPxThis];
+
+    SimulatePixel(xy, pxType);
+
+    UpdateSandTexture(pxType, xy);
+}

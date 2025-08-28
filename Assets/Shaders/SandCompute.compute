@@ -3,7 +3,7 @@
 
 RWTexture2D<float4> SandTexture;
 RWTexture2D<float4> ColliderTexture;
-RWStructuredBuffer<float> SandGrid;
+RWStructuredBuffer<int> SandGrid;
 
 RWStructuredBuffer<int> SandSpawnAmount;
 RWStructuredBuffer<int> SandRemaining;
@@ -14,6 +14,8 @@ int sandSpawnX, sandSpawnY;
 
 float4 holeX, holeY;
 
+int pixelGrid;
+
 bool IsGridPixelEmpty(int2 pxPos) 
 {
     int pxId = pxPos.y * width + pxPos.x;
@@ -21,7 +23,10 @@ bool IsGridPixelEmpty(int2 pxPos)
     bool isPxOutsideSurfaceArea = pxId >= width * height || pxId < 0;
     if(isPxOutsideSurfaceArea) return false;
 
-    bool isPxEmpty = SandGrid[pxId] == 0 && ColliderTexture[pxPos].w == 0;
+    int offsetPixelGrid;
+    InterlockedCompareExchange(SandGrid[pxId], 0, 0, offsetPixelGrid);
+
+    bool isPxEmpty = offsetPixelGrid == 0 && ColliderTexture[pxPos].w == 0;
     return isPxEmpty;
 }
 bool IsGridPixelCloseEmpty(int2 offset, int2 oldPos) 
@@ -45,7 +50,27 @@ int GetGridPixelType(int2 pxPos)
 {
     int pxId = pxPos.y * width + pxPos.x;
 
-    return SandGrid[pxId];
+    int pxType;
+    InterlockedCompareExchange(SandGrid[pxId], 0, 0, pxType);
+
+    //return SandGrid[pxId];
+    return pxType;
+}
+int GetGridPixelCloseType(int2 offset, int2 oldPos) 
+{
+    int2 newPos = int2(offset.x + oldPos.x, offset.y + oldPos.y);
+
+    int newPosId = newPos.y * width + newPos.x;
+    int oldPosId = oldPos.y * width + oldPos.x;
+
+    if(newPosId >= width * height || newPosId < 0) return -1;
+
+    bool isCloseColumn = offset.x >= -1 && offset.x <= 1 && newPos.x < width && newPos.x >= 0;
+    bool isCloseRow = offset.y >= -1 && offset.y <= 1 && newPos.y < height && newPos.y >= 0;
+
+    if(!isCloseColumn || !isCloseRow) return -1;
+
+    return GetGridPixelType(newPos);
 }
 
 void TrySetGridPixel(int2 pixelPos, int pixelType) 
@@ -63,6 +88,7 @@ bool TrySetGridPixelClose(int2 offset, int2 oldPos, int pixelType)
     int newPosId = (newPos.y) * width + (newPos.x);
     int oldPosId = oldPos.y * width + oldPos.x;
 
+    /*
     bool isPixelFree = IsGridPixelCloseEmpty(offset, oldPos);
     if(isPixelFree) 
     {
@@ -71,9 +97,55 @@ bool TrySetGridPixelClose(int2 offset, int2 oldPos, int pixelType)
     }
     else if(!isPixelFree && GetGridPixelType(newPos) == 3)
     {
-        SandCollected[0] += 1;
-        SandRemaining[0] -= 1;
+        //SandCollected[0] += 1;
+        //SandRemaining[0] -= 1;
+        InterlockedAdd(SandCollected[0], 1);
+        InterlockedAdd(SandRemaining[0], -1);
         return true;
+    }
+    */
+
+    int offsetPixelType = GetGridPixelType(newPos);
+    if(offsetPixelType == 0 && IsGridPixelCloseEmpty(offset, oldPos)) 
+    {
+        SandGrid[newPosId] = pixelType;
+        return true;
+    }
+    else if(offsetPixelType == 3 && !IsGridPixelCloseEmpty(offset, oldPos)) 
+    {
+        InterlockedAdd(SandCollected[0], 1);
+        InterlockedAdd(SandRemaining[0], -1);
+        return true;
+    }
+
+    return false;
+}
+
+bool ReplaceSandPixel(int2 newPos, int2 oldPos, int pxType) 
+{
+    if(pxType > -1) 
+    {
+        if(pxType == 0) 
+        {
+            TrySetGridPixel(newPos, 1);
+            TrySetGridPixel(oldPos, 0);
+            return true;
+        }
+        else if(pxType == 1) 
+        {
+            return false;
+        }
+        else if(pxType == 2) 
+        {
+            return false;
+        }
+        else if(pxType == 3) 
+        {
+            InterlockedAdd(SandCollected[0], 1);
+            InterlockedAdd(SandRemaining[0], -1);
+            TrySetGridPixel(oldPos, 0);
+            return true;
+        }
     }
 
     return false;
@@ -90,6 +162,7 @@ void SimulateSandPixel(int2 pxPos)
     int2 botLeftOffset = int2(-1, -1);
     int2 botRightOffset = int2(1, -1);
 
+    /*
     if(TrySetGridPixelClose(botOffset, pxPos, 1)) 
     {
         TrySetGridPixel(pxPos, 0);
@@ -102,6 +175,22 @@ void SimulateSandPixel(int2 pxPos)
     {
         TrySetGridPixel(pxPos, 0);
     }
+    */
+
+    int2 botPos = int2(botOffset.x + pxPos.x, botOffset.y + pxPos.y);
+    int2 botLPos = int2(botLeftOffset.x + pxPos.x, botLeftOffset.y + pxPos.y);
+    int2 botRPos = int2(botRightOffset.x + pxPos.x, botRightOffset.y + pxPos.y);
+
+    //int botPxType = GetGridPixelType(botPos);
+    //int botLPxType = GetGridPixelType(botLPos);
+    //int botRPxType = GetGridPixelType(botRPos);
+
+    int botPxType = GetGridPixelCloseType(botOffset, pxPos);
+    if(ReplaceSandPixel(botPos, pxPos, botPxType)) return;
+    int botLPxType = GetGridPixelCloseType(botLeftOffset, pxPos);
+    if(ReplaceSandPixel(botLPos, pxPos, botLPxType)) return;
+    int botRPxType = GetGridPixelCloseType(botRightOffset, pxPos);
+    if(ReplaceSandPixel(botRPos, pxPos, botRPxType)) return;
 }
 
 bool IsPixelInHole(int2 pxPos) 
@@ -138,34 +227,40 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     if(x >= width || y >= height) return;
 
-    if(ColliderTexture[xy].w != 0) 
-    {
-        SandGrid[y * width + x] = 2;
-    }
-    if(SandGrid[y* width + x] == 2) SandTexture[xy] = float4(1,0,0,1);
-
     int id_gridPxThis = y * width + x;
     int id_gridPxLeft = y * width + x + 1;
     int id_gridPxRight = y * width + x - 1;
     int id_gridPxTop = (y + 1) * width + x;
     int id_gridPxBot = (y - 1) * width + x;
 
+    InterlockedCompareExchange(SandGrid[id_gridPxThis], 0, 0, pixelGrid);
+    int2 pixelTexPos = xy;
+
+    if(ColliderTexture[xy].w != 0) 
+    {
+        SandGrid[y * width + x] = 2;
+    }
+    if(pixelGrid == 2) SandTexture[xy] = float4(1,0,0,1);
+
+    
+
     //Spawn sand
     if(id_gridPxThis == sandSpawnY * width + sandSpawnX && IsGridPixelEmpty(xy) && SandSpawnAmount[0] > 0) 
     {
-        SandGrid[id_gridPxThis] = 1;
-        SandRemaining[0] += 1;
-        SandSpawnAmount[0] -= 1;
+        pixelGrid = 1;
+        //SandRemaining[0] += 1;
+        //SandSpawnAmount[0] -= 1;
+        InterlockedAdd(SandRemaining[0], 1);
+        InterlockedAdd(SandSpawnAmount[0], -1);
     }
 
     //HOLE
     if(IsPixelInHole(xy)) 
     {
-        SandGrid[id_gridPxThis] = 3;
+        SandGrid[y * width + x] = 3;
     }
 
-    int pixelGrid = SandGrid[id_gridPxThis];
-    int2 pixelTexPos = xy;
+    
 
     float xPercent = (float)x / (float)width;
     float yPercent = (float)y / (float)height;

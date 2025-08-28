@@ -13,7 +13,9 @@ public class SandRenderer : MonoBehaviour
     [Header("Sand Settings")]
     public int width;
     public int height;
-    public float[] sandArray;
+    public int threadGroupX;
+    public int threadGroupY;
+    public int[] sandArray;
     ComputeBuffer sandGridBuffer;
     public Vector2 sandSpawnPos;
     public int[] sandSpawnAmount;
@@ -106,7 +108,7 @@ public class SandRenderer : MonoBehaviour
 
         kernelID = computeShaderInstance.FindKernel("CSMain");
 
-        sandGridBuffer = new ComputeBuffer(width * height, sizeof(float));
+        sandGridBuffer = new ComputeBuffer(width * height, sizeof(int));
         sandSpawnAmtBuffer = new ComputeBuffer(1, sizeof(int));
         sandRemainingBuffer = new ComputeBuffer(1, sizeof(int));
         sandCollectedBuffer = new ComputeBuffer(1, sizeof(int));
@@ -116,6 +118,7 @@ public class SandRenderer : MonoBehaviour
         computeShaderInstance.SetBuffer(kernelID, "SandRemaining", sandRemainingBuffer);
         computeShaderInstance.SetBuffer(kernelID, "SandCollected", sandCollectedBuffer);
 
+        //sandRemaining = sandSpawnAmount;
         sandGridBuffer.SetData(sandArray);
         sandSpawnAmtBuffer.SetData(sandSpawnAmount);
         sandRemainingBuffer.SetData(new int[1]);
@@ -159,13 +162,12 @@ public class SandRenderer : MonoBehaviour
         timeDelta += Time.deltaTime;
         if (timeDelta < timeWait) return;
 
-        //computeShaderInstance.Dispatch(kernelID, width / 2, height / 2, 1);
-        computeShaderInstance.Dispatch(kernelID, width, height, 1);
+        computeShaderInstance.Dispatch(kernelID, width / threadGroupX, height / threadGroupY, 1);
 
-        //sandSpawnAmtBuffer.GetData(sandSpawnAmount);
-        //sandRemainingBuffer.GetData(sandRemaining);
+        sandSpawnAmtBuffer.GetData(sandSpawnAmount);
+        sandRemainingBuffer.GetData(sandRemaining);
         sandCollectedBuffer.GetData(sandCollected);
-        sandRemaining[0] = sandSpawnAmount[0] - sandCollected[0];
+        //sandRemaining[0] = sandSpawnAmount[0] - sandCollected[0];
 
         timeDelta = 0;
     }
