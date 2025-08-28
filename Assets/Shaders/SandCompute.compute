@@ -49,10 +49,14 @@ bool TrySetGridPixelClose(int2 offset, int2 oldPos, int pixelType)
     int newPosId = (newPos.y) * width + (newPos.x);
     int oldPosId = oldPos.y * width + oldPos.x;
 
-    if(!IsGridPixelCloseEmpty(offset, oldPos)) return false;
+    bool isPixelFree = IsGridPixelCloseEmpty(offset, oldPos);
+    if(isPixelFree) 
+    {
+        SandGrid[newPosId] = pixelType;
+        return true;
+    }
 
-    SandGrid[newPosId] = pixelType;
-    return true;
+    return false;
 }
 
 void SimulateSandPixel(int2 pxPos) 
