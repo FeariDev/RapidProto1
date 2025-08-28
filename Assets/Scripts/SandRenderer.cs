@@ -3,41 +3,76 @@ using UnityEngine;
 public class SandRenderer : MonoBehaviour
 {
     [Header("Sand Shader References")]
-    public ComputeShader computeShader;
-    public Renderer targetRenderer;
+    [SerializeField] ComputeShader computeShader;
+    [SerializeField] Renderer targetRenderer;
     ComputeBuffer sandTextureBuffer;
     ComputeBuffer nextTextureBuffer;
     ComputeShader computeShaderInstance;
-    public RenderTexture sandRenderTexture;
+    RenderTexture sandRenderTexture;
+
+    /// <summary>
+    /// The amount of sand that is available to spawn
+    /// </summary>
+    [Header("Sand Info")]
+    [Tooltip("The amount of sand that is available to spawn")]
+    [ReadOnly] public int sandSpawnAmount;
+    /// <summary>
+    /// The amount of sand there is currently visible on the map/sand renderer texture
+    /// </summary>
+    [Tooltip("The amount of sand there is currently visible on the map/sand renderer texture")]
+    [ReadOnly] public int sandRemaining;
+    /// <summary>
+    /// The amount of sand that has gone in the hole/has been collected
+    /// </summary>
+    [Tooltip("The amount of sand that has gone in the hole/has been collected")]
+    [ReadOnly] public int sandCollected;
+    int[] sandSpawnAmountArray = new int[1];
+    int[] sandRemainingArray = new int[1];
+    int[] sandCollectedArray = new int[1];
 
     [Header("Sand Settings")]
-    public int width;
-    public int height;
-    public int threadGroupX;
-    public int threadGroupY;
-    public int[] sandArray;
+    [SerializeField] int width;
+    [SerializeField] int height;
+    [SerializeField] Vector2 sandSpawnPos;
+    /// <summary>
+    /// The maximum amount of sand that can spawn
+    /// </summary>
+    public int sandMaxSpawnAmount;
+    [SerializeField] int threadGroupX;
+    [SerializeField] int threadGroupY;
+    [SerializeField] int[] sandArray;
     ComputeBuffer sandGridBuffer;
-    public Vector2 sandSpawnPos;
-    public int[] sandSpawnAmount;
-    public int[] sandRemaining;
-    public int[] sandCollected;
     ComputeBuffer sandSpawnAmtBuffer;
     ComputeBuffer sandRemainingBuffer;
     ComputeBuffer sandCollectedBuffer;
-    public float timeWait = 1f;
-    public float timeDelta = 1f;
+    
+    /// <summary>
+    /// This represents how long it will take at the start of the game for the sand to start falling
+    /// </summary>
+    [Header("Sand timers")]
+    [Tooltip("This represents how long it will take at the start of the game for the sand to start falling")]
+    [SerializeField] float gracePeriod = 30f;
+    [ReadOnly, SerializeField] float gracePeriodDelta;
+    /// <summary>
+    /// This represents how often the sand shader updates
+    /// </summary>
+    [Tooltip("This represents how often the sand shader updates")]
+    [SerializeField] float sandUpdate = 0.1f;
+    [ReadOnly, SerializeField] float sandUpdateDelta = 1f;
+    
+    
 
     [Header("Hole Settings")]
-    public Vector4 holeX;
-    public Vector4 holeY;
+    [SerializeField] Vector4 holeX;
+    [SerializeField] Vector4 holeY;
 
     [Header("Collider References")]
-    public Camera colliderCamera;
-    public RenderTexture colliderRenderTex;
+    [SerializeField] Camera colliderCamera;
+    RenderTexture colliderRenderTex;
 
     [Header("Collider Settings")]
-    public LayerMask colliderLayer;
-    public Vector2 colliderTexDebugSize;
+    [SerializeField] LayerMask colliderLayer;
+    [SerializeField] Vector2 colliderTexDebugSize;
 
     [Header("Debug")]
     [SerializeField] bool showColliderMaskGUI = false;
@@ -118,9 +153,10 @@ public class SandRenderer : MonoBehaviour
         computeShaderInstance.SetBuffer(kernelID, "SandRemaining", sandRemainingBuffer);
         computeShaderInstance.SetBuffer(kernelID, "SandCollected", sandCollectedBuffer);
 
+        InitializeBufferArrays();
         //sandRemaining = sandSpawnAmount;
         sandGridBuffer.SetData(sandArray);
-        sandSpawnAmtBuffer.SetData(sandSpawnAmount);
+        sandSpawnAmtBuffer.SetData(sandSpawnAmountArray);
         sandRemainingBuffer.SetData(new int[1]);
         sandCollectedBuffer.SetData(new int[1]);
 
@@ -132,6 +168,17 @@ public class SandRenderer : MonoBehaviour
 
         computeShaderInstance.SetVector("holeX", holeX);
         computeShaderInstance.SetVector("holeY", holeY);
+
+
+
+        computeShaderInstance.SetTexture(kernelID, "SandTexture", sandRenderTexture);
+        computeShaderInstance.SetTexture(kernelID, "ColliderTexture", colliderRenderTex);
+    }
+    void InitializeBufferArrays()
+    {
+        sandSpawnAmountArray[0] = sandMaxSpawnAmount;
+        //sandRemainingArray[0] = ;
+        //sandCollectedArray[0] = ;
     }
 
     void InitializeColliderRenderTexture()
@@ -156,20 +203,33 @@ public class SandRenderer : MonoBehaviour
 
     void UpdateSandShader()
     {
+        if (gracePeriodDelta < gracePeriod)
+        {
+            gracePeriodDelta += Time.deltaTime;
+            return;
+        }
+
         computeShaderInstance.SetTexture(kernelID, "SandTexture", sandRenderTexture);
         computeShaderInstance.SetTexture(kernelID, "ColliderTexture", colliderRenderTex);
 
-        timeDelta += Time.deltaTime;
-        if (timeDelta < timeWait) return;
+        sandUpdateDelta += Time.deltaTime;
+        if (sandUpdateDelta < sandUpdate) return;
 
         computeShaderInstance.Dispatch(kernelID, width / threadGroupX, height / threadGroupY, 1);
 
-        sandSpawnAmtBuffer.GetData(sandSpawnAmount);
-        sandRemainingBuffer.GetData(sandRemaining);
-        sandCollectedBuffer.GetData(sandCollected);
-        //sandRemaining[0] = sandSpawnAmount[0] - sandCollected[0];
+        sandSpawnAmtBuffer.GetData(sandSpawnAmountArray);
+        sandRemainingBuffer.GetData(sandRemainingArray);
+        sandCollectedBuffer.GetData(sandCollectedArray);
+        UpdateInspectorBufferValues();
 
-        timeDelta = 0;
+        sandUpdateDelta = 0;
+    }
+
+    void UpdateInspectorBufferValues()
+    {
+        sandSpawnAmount = sandSpawnAmountArray[0];
+        sandRemaining = sandRemainingArray[0];
+        sandCollected = sandCollectedArray[0];
     }
 
     void UpdateColliderTexture()
@@ -195,6 +255,9 @@ public class SandRenderer : MonoBehaviour
 
     void OnGUI()
     {
-        if (showColliderMaskGUI && colliderRenderTex != null) GUI.DrawTexture(new Rect(10, 10, width * colliderTexDebugSize.x, height * colliderTexDebugSize.y), colliderRenderTex);
+        if (!showColliderMaskGUI) return;
+
+        GUI.Box(new Rect(10, 10, width * colliderTexDebugSize.x, height * colliderTexDebugSize.y), "DEBUG");
+        if (colliderRenderTex != null) GUI.DrawTexture(new Rect(10, 10, width * colliderTexDebugSize.x, height * colliderTexDebugSize.y), colliderRenderTex);
     }
 }

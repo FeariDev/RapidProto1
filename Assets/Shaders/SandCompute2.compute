@@ -100,7 +100,15 @@ void UpdateCollider(int2 xy)
 {
     if(ColliderTexture[xy].w != 0) 
     {
+        if(SandGrid[xy.y * width + xy.x] != 0) return;
+
         SandGrid[xy.y * width + xy.x] = 2;
+    }
+    else 
+    {
+        if(SandGrid[xy.y * width + xy.x] != 2) return;
+
+        SandGrid[xy.y * width + xy.x] = 0;
     }
 }
 
