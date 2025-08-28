@@ -5,6 +5,7 @@ RWTexture2D<float4> SandTexture;
 RWTexture2D<float4> ColliderTexture;
 RWStructuredBuffer<float> SandGrid;
 
+RWStructuredBuffer<int> SandSpawnAmount;
 RWStructuredBuffer<int> SandRemaining;
 RWStructuredBuffer<int> SandCollected;
 
@@ -71,6 +72,7 @@ bool TrySetGridPixelClose(int2 offset, int2 oldPos, int pixelType)
     else if(!isPixelFree && GetGridPixelType(newPos) == 3)
     {
         SandCollected[0] += 1;
+        SandRemaining[0] -= 1;
         return true;
     }
 
@@ -149,10 +151,11 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int id_gridPxBot = (y - 1) * width + x;
 
     //Spawn sand
-    if(id_gridPxThis == sandSpawnY * width + sandSpawnX && IsGridPixelEmpty(xy) && SandRemaining[0] > 0) 
+    if(id_gridPxThis == sandSpawnY * width + sandSpawnX && IsGridPixelEmpty(xy) && SandSpawnAmount[0] > 0) 
     {
         SandGrid[id_gridPxThis] = 1;
-        SandRemaining[0] -= 1;
+        SandRemaining[0] += 1;
+        SandSpawnAmount[0] -= 1;
     }
 
     //HOLE
