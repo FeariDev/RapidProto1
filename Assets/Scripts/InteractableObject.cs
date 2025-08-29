@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class InteractableObject : MonoBehaviour
 {
@@ -29,6 +28,9 @@ public class InteractableObject : MonoBehaviour
     private void OnMouseDown()
     {
         isDragging = true;
+        //Sami. Lisäsin Tämän
+        currentRotation = transform.rotation.eulerAngles.z;
+        //
     }
     private void OnMouseUp()
     {
