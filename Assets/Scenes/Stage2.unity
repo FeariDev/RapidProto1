@@ -1933,7 +1933,7 @@ MonoBehaviour:
   mainMenu: {fileID: 979572415}
   menuText: {fileID: 2106601756}
   timerText: {fileID: 340669921}
-  timer: 1
+  timer: 30
   ghosts:
   - {fileID: 153395200}
   - {fileID: 2036177477}
