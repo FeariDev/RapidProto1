@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static bool isGameStarted;
     [SerializeField] private GameObject menu;
     [SerializeField] private GameObject retry;
     [SerializeField] private GameObject next;
@@ -14,7 +15,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int timer;
     [SerializeField] private List<GameObject> ghosts;
     [SerializeField] private List<GameObject> whatToTurnOff;
-    [SerializeField] private Bars bars;
 
     private void Awake()
     {
@@ -47,7 +47,6 @@ public class GameManager : MonoBehaviour
         WaitForSeconds delay = new WaitForSeconds(1);
         while (true)
         {
-            bars.AddScore(1);
             yield return delay;
             if (timer == 0)
             {
@@ -64,7 +63,7 @@ public class GameManager : MonoBehaviour
             ghost.SetActive(true);
         }
         StartCoroutine(TimerRoutineBar());
-
+        isGameStarted = true;
         //Add starting the sand falling
 
     }
