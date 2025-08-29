@@ -1397,7 +1397,7 @@ Transform:
   m_GameObject: {fileID: 450695140}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.13, y: -4.83, z: 0}
+  m_LocalPosition: {x: -2.5, y: -4.83, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3725,19 +3725,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.w
-      value: 63
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.x
-      value: 58
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.y
-      value: 63
+      value: 24
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.z
-      value: 58
+      value: 22
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: gracePeriod

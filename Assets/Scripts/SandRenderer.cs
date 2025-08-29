@@ -203,11 +203,12 @@ public class SandRenderer : MonoBehaviour
 
     void UpdateSandShader()
     {
-        if (gracePeriodDelta < gracePeriod)
-        {
-            gracePeriodDelta += Time.deltaTime;
-            return;
-        }
+        //if (gracePeriodDelta < gracePeriod)
+        //{
+        //    gracePeriodDelta += Time.deltaTime;
+        //    return;
+        //}
+        if (!GameManager.isGameStarted) return;
 
         computeShaderInstance.SetTexture(kernelID, "SandTexture", sandRenderTexture);
         computeShaderInstance.SetTexture(kernelID, "ColliderTexture", colliderRenderTex);

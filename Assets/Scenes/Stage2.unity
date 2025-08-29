@@ -1885,7 +1885,7 @@ Transform:
   m_GameObject: {fileID: 625873254}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.32001, y: -0.49192, z: 0}
+  m_LocalPosition: {x: -4.32001, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3717,14 +3717,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1727715934}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.60072845, w: 0.7994532}
-  m_LocalPosition: {x: -2.49, y: -0.27, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0.1884832, w: 0.98207647}
+  m_LocalPosition: {x: -1.17, y: -1.62, z: 0}
   m_LocalScale: {x: 0.3, y: 0.22120501, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 352400289}
   m_Father: {fileID: 1893307471}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -73.844}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -21.729}
 --- !u!212 &1727715936
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5214,7 +5214,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.w
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.x
@@ -5222,7 +5222,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.y
-      value: 5
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.z
