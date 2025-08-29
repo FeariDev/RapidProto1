@@ -6,6 +6,7 @@ public class _SceneManager : MonoBehaviour
     public void NextStage(string sceneName)
     {
         SceneManager.LoadScene(sceneName);
+        GameManger.isGameStarted = false;
     }
 
     public void Retry()

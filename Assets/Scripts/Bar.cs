@@ -42,6 +42,10 @@ public class Bar : MonoBehaviour
                     break;
             }
         }
+        else
+        {
+            currentTime = 0;
+        }
     }
 
 
