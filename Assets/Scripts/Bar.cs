@@ -30,14 +30,17 @@ public class Bar : MonoBehaviour
 
     void Update()
     {
-        switch (sliderType)
+        if (GameManager.isGameStarted)
         {
-            case SliderType.SandBar:
-                UpdateSandBar();
-                break;
-            case SliderType.TimerBar:
-                UpdateTimerBar();
-                break;
+            switch (sliderType)
+            {
+                case SliderType.SandBar:
+                    UpdateSandBar();
+                    break;
+                case SliderType.TimerBar:
+                    UpdateTimerBar();
+                    break;
+            }
         }
     }
 
@@ -49,6 +52,11 @@ public class Bar : MonoBehaviour
         sandBarValue = (float)sandRenderer.sandCollected / (float)winAmount;
 
         SetSlider(sandBarValue);
+
+        if ((float)sandRenderer.sandCollected >= (float)winAmount)
+        {
+            manager.Event(0);
+        }
     }
 
     public float timerBarValue;
