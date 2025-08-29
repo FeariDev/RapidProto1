@@ -1627,6 +1627,9 @@ MonoBehaviour:
   whatToTurnOff:
   - {fileID: 829838701}
   - {fileID: 340669920}
+  - {fileID: 731688275}
+  - {fileID: 7166264498824456045}
+  - {fileID: 5890938191017693296}
 --- !u!4 &664871284
 Transform:
   m_ObjectHideFlags: 0
@@ -4182,7 +4185,7 @@ MonoBehaviour:
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
-  m_ScreenMatchMode: 0
+  m_ScreenMatchMode: 1
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
@@ -4830,6 +4833,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd9cb0460d276f0479e7164326941b5e, type: 3}
+--- !u!1 &5890938191017693296 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7243216672892739244, guid: fd9cb0460d276f0479e7164326941b5e, type: 3}
+  m_PrefabInstance: {fileID: 5890938191017693295}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7166264498824456044
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4939,6 +4947,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8dce15397690c6a4398748524d6f0bd3, type: 3}
+--- !u!1 &7166264498824456045 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 117627012904295459, guid: 8dce15397690c6a4398748524d6f0bd3, type: 3}
+  m_PrefabInstance: {fileID: 7166264498824456044}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
