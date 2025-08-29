@@ -12,6 +12,7 @@ public class _SceneManager : MonoBehaviour
     public void Retry()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        GameManager.isGameStarted = false;
     }
 
     public void QuitGame()
