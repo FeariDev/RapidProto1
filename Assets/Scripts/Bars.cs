@@ -5,7 +5,6 @@ public class Bars : MonoBehaviour
 {
     [SerializeField] private int amountNeededForEvent = 80;
     [SerializeField] private int currentAmount;
-    [SerializeField] private int eventNumber;
     [SerializeField] private Image progressBar;
     public GameManager manager;
 
@@ -16,7 +15,7 @@ public class Bars : MonoBehaviour
         progressBar.rectTransform.localPosition += new Vector3(0f, amount*5f, 0f); //Normal scane /10 scale, *5 position
         if (currentAmount >= amountNeededForEvent)
         {
-            manager.Event(eventNumber);
+            manager.Event(1);
         }
     }
 }
