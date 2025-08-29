@@ -3729,7 +3729,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.x
-      value: 0
+      value: 58
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.y
@@ -3737,7 +3737,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.z
-      value: 0
+      value: 58
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: gracePeriod
