@@ -2562,6 +2562,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 664871283}
     - target: {fileID: 4119163991541184743, guid: fd9cb0460d276f0479e7164326941b5e, type: 3}
+      propertyPath: gameEndTime
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 4119163991541184743, guid: fd9cb0460d276f0479e7164326941b5e, type: 3}
       propertyPath: sandRenderer
       value: 
       objectReference: {fileID: 4439586745834282828}
@@ -5226,8 +5230,16 @@ PrefabInstance:
       value: SandRenderer
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: width
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: height
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.w
-      value: 3
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.x
@@ -5235,11 +5247,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.y
-      value: 3
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.z
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: holeY.w
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: holeY.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: sandUpdate
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: gracePeriod
@@ -5251,11 +5275,15 @@ PrefabInstance:
       objectReference: {fileID: 1327243463}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: sandSpawnPos.x
-      value: 32
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: sandSpawnPos.y
-      value: 38
+      value: 152
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: sandArray.Array.size
+      value: 65536
       objectReference: {fileID: 0}
     - target: {fileID: 5670613115318345966, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: m_LocalPosition.x

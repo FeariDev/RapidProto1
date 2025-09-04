@@ -3727,20 +3727,40 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: width
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: height
+      value: 256
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.w
-      value: 24
+      value: 96
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.x
-      value: 22
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.y
-      value: 24
+      value: 96
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: holeX.z
-      value: 22
+      value: 88
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: holeY.w
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: holeY.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: sandUpdate
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: gracePeriod
@@ -3752,7 +3772,15 @@ PrefabInstance:
       objectReference: {fileID: 819426645}
     - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: sandSpawnPos.x
-      value: 12
+      value: 48
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: sandSpawnPos.y
+      value: 136
+      objectReference: {fileID: 0}
+    - target: {fileID: 4005533964803178191, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
+      propertyPath: sandArray.Array.size
+      value: 65536
       objectReference: {fileID: 0}
     - target: {fileID: 5670613115318345966, guid: 40f02dccdd9c6b44398f241a0130c4aa, type: 3}
       propertyPath: m_LocalPosition.x

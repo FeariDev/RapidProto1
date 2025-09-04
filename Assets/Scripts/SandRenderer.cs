@@ -133,7 +133,7 @@ public class SandRenderer : MonoBehaviour
     {
         sandRenderTexture = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
         sandRenderTexture.enableRandomWrite = true;
-        sandRenderTexture.filterMode = FilterMode.Point;
+        sandRenderTexture.filterMode = FilterMode.Bilinear;
         sandRenderTexture.Create();
     }
 
